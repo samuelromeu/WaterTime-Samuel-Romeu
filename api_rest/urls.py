@@ -13,6 +13,7 @@ urlpatterns = [
     path('lembrete/<int:pk>', views.get_lembrete_by_id, name='get_lembrete'),
     path('lembrete/post', views.post_lembrete, name='post_lembrete'),
     path('lembrete/put/<int:pk>/', views.put_lembrete, name='put_lembrete'),
-    path('lembrete/delete/<int:pk>/', views.delete_lembrete, name='delete_lembrete')
+    path('lembrete/criar', views.criar_lembretes, name='criar_lembretes'),
+
 ]
 

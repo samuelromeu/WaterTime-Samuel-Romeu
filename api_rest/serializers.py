@@ -7,7 +7,7 @@ from .models import Usuario, Lembrete
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ('__all__')
+        fields = ['usuario_id', 'usuario_nome', 'usuario_peso', 'usuario_idade']
 
 class LembreteSerializer(serializers.ModelSerializer):
     class Meta:

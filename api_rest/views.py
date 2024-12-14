@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from datetime import datetime, timedelta, time
+
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -46,7 +48,24 @@ def post_usuario(request):
         serializer = UsuarioSerializer(data = new_usuario)
 
         if serializer.is_valid(): #verifica
-            serializer.save()      #salva
+
+            usuario_peso = serializer.validated_data.get('usuario_peso', 0)
+            usuario_idade = serializer.validated_data.get('usuario_idade', 0)
+
+            if 1 <= usuario_idade <=17:
+                meta_dia = (usuario_peso * 40)
+            elif 18 <= usuario_idade <=55:
+                meta_dia = (usuario_peso * 35)
+            elif 56 <= usuario_peso <=65:
+                meta_dia = (usuario_peso * 30)
+            elif 66 <= usuario_peso:
+                meta_dia = (usuario_peso *25)
+
+            Usuario.objects.create(
+            meta_dia=meta_dia,
+            **serializer.validated_data
+            )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED) #resposta
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -135,3 +154,42 @@ def delete_lembrete(request, pk):
             return Response(status=status.HTTP_202_ACCEPTED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def criar_lembretes(request):
+
+    usuario_id = request.data.get('usuario_id')
+
+    try:
+        usuario = Usuario.objects.get(pk=usuario_id)  # Busca o usuário pela ID
+    except Usuario.DoesNotExist:
+        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+    hora_atual = datetime.now()
+    lembrete_dia = datetime.now().date() 
+    lembretes = []
+    lembrete_quantidade_agua = usuario.meta_dia/10
+    hora_anterior = hora_atual
+
+
+    for i in range(10):
+        
+        simulacao_hora = hora_atual + timedelta(hours=2 * i)
+        lembrete_hora = simulacao_hora.time()  
+        simulacao_datetime = datetime.combine(lembrete_dia, simulacao_hora.time())
+        print("Simulação como datetime:", simulacao_datetime)
+        print(lembrete_hora)
+
+        if simulacao_datetime < hora_anterior:
+            lembrete_dia = (lembrete_dia + timedelta(days=1))  
+
+       
+ 
+        lembrete = Lembrete(usuario_id=usuario,lembrete_dia=lembrete_dia, lembrete_hora=lembrete_hora, 
+                            lembrete_quantidade_agua=lembrete_quantidade_agua)
+        lembrete.save()
+        lembretes.append(lembrete)
+
+    serializer = LembreteSerializer(lembretes, many=True)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
