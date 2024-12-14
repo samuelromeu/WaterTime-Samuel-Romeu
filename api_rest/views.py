@@ -171,7 +171,7 @@ def criar_lembretes(request):
     lembretes = []
     lembrete_quantidade_agua = usuario.meta_dia/10
     hora_anterior = hora_atual
-
+    quantidade_garrafa = 600        
 
     for i in range(10):
         
@@ -184,10 +184,15 @@ def criar_lembretes(request):
         if simulacao_datetime < hora_anterior:
             lembrete_dia = (lembrete_dia + timedelta(days=1))  
 
-       
- 
+        if quantidade_garrafa < lembrete_quantidade_agua:
+            lembrete_mensagem = ('Hora de beber água e encher a garrafa!')
+            quantidade_garrafa = 600
+        else: 
+            lembrete_mensagem = ('Hora de beber água')
+
+        quantidade_garrafa = quantidade_garrafa - lembrete_quantidade_agua
         lembrete = Lembrete(usuario_id=usuario,lembrete_dia=lembrete_dia, lembrete_hora=lembrete_hora, 
-                            lembrete_quantidade_agua=lembrete_quantidade_agua)
+                            lembrete_quantidade_agua=lembrete_quantidade_agua, lembrete_mensagem=lembrete_mensagem)
         lembrete.save()
         lembretes.append(lembrete)
 

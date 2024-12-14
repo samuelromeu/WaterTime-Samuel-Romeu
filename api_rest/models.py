@@ -16,6 +16,10 @@ class Usuario(models.Model):
 class Lembrete(models.Model):
     lembrete_id = models.AutoField(primary_key=True)
     usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE, default=0)
-    lembrete_dia = models.DateField()
-    lembrete_hora = models.TimeField()
-    lembrete_quantidade_agua = models.IntegerField()
+    lembrete_dia = models.DateField(default=0)
+    lembrete_hora = models.TimeField(default=0)
+    lembrete_quantidade_agua = models.IntegerField(default=0)
+    lembrete_mensagem = models.CharField(max_length=100, default=0)
+
+    def __str__(self):
+        return f"Lembrete de {self.usuario_id.usuario_nome} para {self.lembrete_dia} às {self.lembrete_hora}"  

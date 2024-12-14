@@ -14,6 +14,6 @@ urlpatterns = [
     path('lembrete/post', views.post_lembrete, name='post_lembrete'),
     path('lembrete/put/<int:pk>/', views.put_lembrete, name='put_lembrete'),
     path('lembrete/criar', views.criar_lembretes, name='criar_lembretes'),
-
+    path('lembrete/veri', views.verificar_lembretes, name='verificar'),
 ]
 
